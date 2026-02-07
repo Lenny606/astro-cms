@@ -3,9 +3,10 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
     headline: string;
+    description?: string;
 }
 
-const { headline } = Astro.props;
+const { headline, description } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
@@ -21,7 +22,7 @@ const t = useTranslations(lang);
             {headline} <br/><span class="text-white/40 italic">Unseen</span>
         </h1>
         <p class="text-lg md:text-xl text-slate-300 max-w-xl mb-10 font-light leading-relaxed">
-            {t('hero.desc')}
+            {description || t('hero.desc')}
         </p>
         <div class="flex gap-4">
             <button class="bg-white text-black px-8 py-4 rounded-lg font-bold hover:bg-primary hover:text-white transition-all">

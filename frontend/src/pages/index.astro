@@ -4,30 +4,41 @@ import Navigation from '../components/Navigation.astro';
 import Hero from '../components/Hero.astro';
 import Gallery from '../components/Gallery.astro';
 import Statement from '../components/Statement.astro';
-import Newsletter from '../components/Newsletter.astro';
 import Footer from '../components/Footer.astro';
+import { getLangFromUrl } from '../i18n/utils';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+const lang = getLangFromUrl(Astro.url);
+
 let headline = 'Elara Volkov';
+let heroDesc = '';
+let statement = '';
 
 try {
 	const response = await fetch(`${API_URL}/api/settings`);
 	if (response.ok) {
 		const data = await response.json();
-		headline = data.headline_cz || headline;
+		if (lang === 'en') {
+			headline = data.headline_en || headline;
+			heroDesc = data.hero_desc_en;
+			statement = data.statement_en;
+		} else {
+			headline = data.headline_cz || headline;
+			heroDesc = data.hero_desc_cz;
+			statement = data.statement_cz;
+		}
 	}
 } catch (e) {
-	console.error('Failed to fetch headline', e);
+	console.error('Failed to fetch settings', e);
 }
 ---
 
 <Layout title="ELARA.VO | Fine Art & Surrealism">
 	<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
 		<Navigation />
-		<Hero headline={headline} />
+		<Hero headline={headline} description={heroDesc} />
 		<Gallery />
-		<Statement />
-		<Newsletter />
+		<Statement quote={statement} />
 		<Footer />
 	</div>
 </Layout>

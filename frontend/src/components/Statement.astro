@@ -1,10 +1,15 @@
 ---
+interface Props {
+    quote?: string;
+}
+
+const { quote } = Astro.props;
 ---
 <section class="bg-primary/5 py-32 border-y border-white/5">
     <div class="max-w-4xl mx-auto px-6 text-center">
         <span class="material-symbols-outlined text-primary text-4xl mb-8">format_quote</span>
         <h2 class="text-3xl md:text-5xl font-bold leading-tight mb-10 italic font-display">
-            "Art should not merely be a representation of reality, but a window into the souls of the things we often overlook."
+            "{quote || "Art should not merely be a representation of reality, but a window into the souls of the things we often overlook."}"
         </h2>
         <div class="flex items-center justify-center gap-4">
             <div class="h-px w-12 bg-primary"></div>

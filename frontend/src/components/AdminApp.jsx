@@ -5,12 +5,26 @@ export default function AdminApp() {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [headlineCZ, setHeadlineCZ] = useState('');
     const [headlineEN, setHeadlineEN] = useState('');
+    const [heroDescCZ, setHeroDescCZ] = useState('');
+    const [heroDescEN, setHeroDescEN] = useState('');
+    const [statementCZ, setStatementCZ] = useState('');
+    const [statementEN, setStatementEN] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [uploadMessage, setUploadMessage] = useState('');
     const [preview, setPreview] = useState(null);
     const [galleries, setGalleries] = useState([]);
     const [isGalleryLoading, setIsGalleryLoading] = useState(false);
+    const [toasts, setToasts] = useState([]);
+    const [settingsTab, setSettingsTab] = useState('cz');
+
+    const showToast = (message, type = 'success') => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+        setTimeout(() => {
+            setToasts(prev => prev.filter(t => t.id !== id));
+        }, 3000);
+    };
 
     const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -27,6 +41,10 @@ export default function AdminApp() {
             .then(data => {
                 setHeadlineCZ(data.headline_cz || '');
                 setHeadlineEN(data.headline_en || '');
+                setHeroDescCZ(data.hero_desc_cz || '');
+                setHeroDescEN(data.hero_desc_en || '');
+                setStatementCZ(data.statement_cz || '');
+                setStatementEN(data.statement_en || '');
             })
             .catch(err => console.error('Failed to fetch settings'));
 
@@ -54,16 +72,20 @@ export default function AdminApp() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     headline_cz: headlineCZ,
-                    headline_en: headlineEN
+                    headline_en: headlineEN,
+                    hero_desc_cz: heroDescCZ,
+                    hero_desc_en: heroDescEN,
+                    statement_cz: statementCZ,
+                    statement_en: statementEN
                 }),
             });
             if (response.ok) {
-                alert('Settings saved successfully!');
+                showToast('Settings saved successfully!');
             } else {
-                alert('Failed to save settings.');
+                showToast('Failed to save settings.', 'error');
             }
         } catch (err) {
-            alert('Error connecting to settings API.');
+            showToast('Error connecting to settings API.', 'error');
         } finally {
             setIsSaving(false);
         }
@@ -112,9 +134,10 @@ export default function AdminApp() {
             if (response.ok) {
                 const newGallery = await response.json();
                 setGalleries([...galleries, newGallery]);
+                showToast('Gallery created successfully!');
             }
         } catch (err) {
-            alert('Failed to create gallery');
+            showToast('Failed to create gallery', 'error');
         }
     };
 
@@ -127,23 +150,24 @@ export default function AdminApp() {
             });
             if (response.ok) {
                 setGalleries(galleries.map(g => g.id === id ? { ...g, title: newTitle } : g));
+                showToast('Gallery title updated');
             }
         } catch (err) {
-            alert('Failed to update gallery title');
+            showToast('Failed to update gallery title', 'error');
         }
     };
 
     const handleDeleteGallery = async (id) => {
-        if (!confirm('Are you sure you want to delete this gallery?')) return;
         try {
             const response = await fetch(`${API_URL}/api/galleries/${id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {
                 setGalleries(galleries.filter(g => g.id !== id));
+                showToast('Gallery deleted');
             }
         } catch (err) {
-            alert('Failed to delete gallery');
+            showToast('Failed to delete gallery', 'error');
         }
     };
 
@@ -187,9 +211,10 @@ export default function AdminApp() {
                     setGalleries(galleries.map(g =>
                         g.id === galleryId ? { ...g, images: updatedImages } : g
                     ));
+                    showToast(`Uploaded ${uploadedImages.length} images`);
                 }
             } catch (err) {
-                alert('Failed to update gallery images');
+                showToast('Failed to update gallery images', 'error');
             }
         }
         setIsGalleryLoading(false);
@@ -210,9 +235,10 @@ export default function AdminApp() {
                 setGalleries(galleries.map(g =>
                     g.id === galleryId ? { ...g, images: updatedImages } : g
                 ));
+                showToast('Image removed');
             }
         } catch (err) {
-            alert('Failed to remove image');
+            showToast('Failed to remove image', 'error');
         }
     };
 
@@ -282,6 +308,23 @@ export default function AdminApp() {
             maxWidth: '100%',
             boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         },
+        tabContainer: {
+            display: 'flex',
+            gap: '1rem',
+            marginBottom: '2rem',
+            borderBottom: '1px solid #eee',
+            paddingBottom: '0.5rem',
+        },
+        tab: (active) => ({
+            padding: '0.5rem 1rem',
+            cursor: 'pointer',
+            fontSize: '0.9rem',
+            fontWeight: 500,
+            color: active ? '#000' : '#666',
+            borderBottom: active ? '2px solid #000' : '2px solid transparent',
+            transition: 'all 0.2s ease',
+            marginBottom: '-0.5rem',
+        }),
     };
 
     const renderContent = () => {
@@ -349,56 +392,150 @@ export default function AdminApp() {
             case 'settings':
                 return (
                     <section>
-                        <h2 style={{ fontSize: '1.2rem', marginBottom: '1.5rem', fontWeight: 500 }}>Global Settings</h2>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '500px' }}>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Landing Page Headline (CZ)</label>
-                                <input
-                                    type="text"
-                                    value={headlineCZ}
-                                    onChange={(e) => setHeadlineCZ(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        borderRadius: '0.5rem',
-                                        border: '1px solid #eee',
-                                        fontSize: '0.9rem',
-                                        outline: 'none'
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Landing Page Headline (EN)</label>
-                                <input
-                                    type="text"
-                                    value={headlineEN}
-                                    onChange={(e) => setHeadlineEN(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        borderRadius: '0.5rem',
-                                        border: '1px solid #eee',
-                                        fontSize: '0.9rem',
-                                        outline: 'none'
-                                    }}
-                                />
-                            </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.2rem', fontWeight: 500 }}>Global Settings</h2>
                             <button
                                 onClick={handleSaveSettings}
                                 disabled={isSaving}
                                 style={{
-                                    padding: '0.75rem',
+                                    padding: '0.6rem 1.2rem',
                                     borderRadius: '0.5rem',
                                     backgroundColor: '#000',
                                     color: '#fff',
                                     border: 'none',
                                     cursor: 'pointer',
                                     fontWeight: 500,
+                                    fontSize: '0.9rem',
                                     opacity: isSaving ? 0.6 : 1
                                 }}
                             >
                                 {isSaving ? 'Saving...' : 'Save Settings'}
                             </button>
+                        </div>
+
+                        <div style={styles.tabContainer}>
+                            <div
+                                style={styles.tab(settingsTab === 'cz')}
+                                onClick={() => setSettingsTab('cz')}
+                            >
+                                Czech (CZ)
+                            </div>
+                            <div
+                                style={styles.tab(settingsTab === 'en')}
+                                onClick={() => setSettingsTab('en')}
+                            >
+                                English (EN)
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '800px' }}>
+                            {settingsTab === 'cz' ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Landing Page Headline</label>
+                                        <input
+                                            type="text"
+                                            value={headlineCZ}
+                                            onChange={(e) => setHeadlineCZ(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                borderRadius: '0.5rem',
+                                                border: '1px solid #eee',
+                                                fontSize: '0.9rem',
+                                                outline: 'none'
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Hero Description</label>
+                                        <textarea
+                                            value={heroDescCZ}
+                                            onChange={(e) => setHeroDescCZ(e.target.value)}
+                                            rows="4"
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                borderRadius: '0.5rem',
+                                                border: '1px solid #eee',
+                                                fontSize: '0.9rem',
+                                                outline: 'none',
+                                                resize: 'vertical'
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Statement Quote</label>
+                                        <textarea
+                                            value={statementCZ}
+                                            onChange={(e) => setStatementCZ(e.target.value)}
+                                            rows="3"
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                borderRadius: '0.5rem',
+                                                border: '1px solid #eee',
+                                                fontSize: '0.9rem',
+                                                outline: 'none',
+                                                resize: 'vertical'
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Landing Page Headline</label>
+                                        <input
+                                            type="text"
+                                            value={headlineEN}
+                                            onChange={(e) => setHeadlineEN(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                borderRadius: '0.5rem',
+                                                border: '1px solid #eee',
+                                                fontSize: '0.9rem',
+                                                outline: 'none'
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Hero Description</label>
+                                        <textarea
+                                            value={heroDescEN}
+                                            onChange={(e) => setHeroDescEN(e.target.value)}
+                                            rows="4"
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                borderRadius: '0.5rem',
+                                                border: '1px solid #eee',
+                                                fontSize: '0.9rem',
+                                                outline: 'none',
+                                                resize: 'vertical'
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Statement Quote</label>
+                                        <textarea
+                                            value={statementEN}
+                                            onChange={(e) => setStatementEN(e.target.value)}
+                                            rows="3"
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                borderRadius: '0.5rem',
+                                                border: '1px solid #eee',
+                                                fontSize: '0.9rem',
+                                                outline: 'none',
+                                                resize: 'vertical'
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </section>
                 );
@@ -552,14 +689,77 @@ export default function AdminApp() {
 
             <main style={styles.main}>
                 <header style={styles.header}>
-                    <h1 style={{ fontSize: '1.5rem', fontWeight: 600, textTransform: 'capitalize' }}>
-                        {activeTab}
-                    </h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 600, textTransform: 'capitalize' }}>
+                            {activeTab}
+                        </h1>
+                        <a
+                            href="/"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                color: '#666',
+                                textDecoration: 'none',
+                                fontSize: '0.8rem',
+                                padding: '0.4rem 0.8rem',
+                                borderRadius: '0.5rem',
+                                border: '1px solid #eee',
+                                transition: 'all 0.2s',
+                            }}
+                            onMouseOver={(e) => { e.target.style.backgroundColor = '#f5f5f5'; e.target.style.borderColor = '#ddd'; }}
+                            onMouseOut={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.borderColor = '#eee'; }}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>open_in_new</span>
+                            View Website
+                        </a>
+                    </div>
                     <span style={styles.statusIcon}>{status}</span>
                 </header>
 
                 {renderContent()}
             </main>
+
+            {/* Toast Container */}
+            <div style={{
+                position: 'fixed',
+                bottom: '2rem',
+                right: '2rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                zIndex: 1000,
+                pointerEvents: 'none'
+            }}>
+                {toasts.map(toast => (
+                    <div key={toast.id} style={{
+                        padding: '1rem 1.5rem',
+                        backgroundColor: toast.type === 'error' ? '#fee2e2' : '#f0fdf4',
+                        color: toast.type === 'error' ? '#991b1b' : '#166534',
+                        border: `1px solid ${toast.type === 'error' ? '#fecaca' : '#dcfce7'}`,
+                        borderRadius: '0.75rem',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                        fontSize: '0.9rem',
+                        fontWeight: 500,
+                        pointerEvents: 'auto',
+                        animation: 'fadeInSlide 0.3s ease forwards',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                    }}>
+                        <style>{`
+                            @keyframes fadeInSlide {
+                                from { opacity: 0; transform: translateY(1rem); }
+                                to { opacity: 1; transform: translateY(0); }
+                            }
+                        `}</style>
+                        <span style={{ fontSize: '1.1rem' }}>
+                            {toast.type === 'error' ? '✕' : '✓'}
+                        </span>
+                        {toast.message}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
