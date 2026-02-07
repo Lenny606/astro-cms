@@ -432,7 +432,7 @@ export default function AdminApp() {
                             {settingsTab === 'cz' ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Landing Page Headline</label>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Landing Page Headline</strong></label>
                                         <input
                                             type="text"
                                             value={headlineCZ}
@@ -448,7 +448,7 @@ export default function AdminApp() {
                                         />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Hero Description</label>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Hero Description</strong></label>
                                         <textarea
                                             value={heroDescCZ}
                                             onChange={(e) => setHeroDescCZ(e.target.value)}
@@ -465,7 +465,7 @@ export default function AdminApp() {
                                         />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Statement Quote</label>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Statement Quote</strong></label>
                                         <textarea
                                             value={statementCZ}
                                             onChange={(e) => setStatementCZ(e.target.value)}
@@ -485,7 +485,7 @@ export default function AdminApp() {
                             ) : (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Landing Page Headline</label>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Landing Page Headline</strong></label>
                                         <input
                                             type="text"
                                             value={headlineEN}
@@ -501,7 +501,7 @@ export default function AdminApp() {
                                         />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Hero Description</label>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Hero Description</strong></label>
                                         <textarea
                                             value={heroDescEN}
                                             onChange={(e) => setHeroDescEN(e.target.value)}
@@ -518,7 +518,7 @@ export default function AdminApp() {
                                         />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Statement Quote</label>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Statement Quote</strong></label>
                                         <textarea
                                             value={statementEN}
                                             onChange={(e) => setStatementEN(e.target.value)}
