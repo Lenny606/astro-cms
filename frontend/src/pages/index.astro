@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import Hero from '../components/Hero.astro';
+import Gallery from '../components/Gallery.astro';
+import Statement from '../components/Statement.astro';
+import Newsletter from '../components/Newsletter.astro';
+import Footer from '../components/Footer.astro';
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+let headline = 'Elara Volkov';
+
+try {
+	const response = await fetch(`${API_URL}/api/settings`);
+	if (response.ok) {
+		const data = await response.json();
+		headline = data.headline_cz || headline;
+	}
+} catch (e) {
+	console.error('Failed to fetch headline', e);
+}
+---
+
+<Layout title="ELARA.VO | Fine Art & Surrealism">
+	<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+		<Navigation />
+		<Hero headline={headline} />
+		<Gallery />
+		<Statement />
+		<Newsletter />
+		<Footer />
+	</div>
+</Layout>

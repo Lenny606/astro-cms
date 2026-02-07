@@ -1,0 +1,28 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const langSwitchUrl = lang === 'cz' ? '/en' : '/';
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-6 bg-transparent backdrop-blur-sm border-b border-white/5">
+    <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary text-3xl">brush</span>
+        <h2 class="text-xl font-bold tracking-tight">ELARA.VO</h2>
+    </div>
+    <nav class="hidden md:flex items-center gap-10">
+        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.works')}</a>
+        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.philosophy')}</a>
+        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.exhibitions')}</a>
+        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.contact')}</a>
+    </nav>
+    <div class="flex items-center gap-4">
+        <a href={langSwitchUrl} class="text-sm font-medium hover:text-primary transition-colors">{t('nav.lang_switch')}</a>
+        <a href="/admin" class="text-sm font-medium hover:text-primary transition-colors">{t('nav.admin')}</a>
+        <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg text-sm font-bold transition-all">
+            {t('nav.inquire')}
+        </button>
+    </div>
+</header>
