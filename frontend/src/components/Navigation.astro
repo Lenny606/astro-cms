@@ -18,7 +18,7 @@ const langSwitchUrl = lang === 'cz' ? '/en' : '/';
         <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.works')}</a>
         <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.philosophy')}</a>
         <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.exhibitions')}</a>
-        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.contact')}</a>
+        <a class="text-sm font-medium hover:text-primary transition-colors" href={lang === 'en' ? "/en/contact" : "/contact"}>{t('nav.contact')}</a>
     </nav>
 
     <!-- Desktop Actions -->
@@ -41,7 +41,7 @@ const langSwitchUrl = lang === 'cz' ? '/en' : '/';
             <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.works')}</a>
             <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.philosophy')}</a>
             <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.exhibitions')}</a>
-            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.contact')}</a>
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href={lang === 'en' ? "/en/contact" : "/contact"}>{t('nav.contact')}</a>
         </nav>
         
         <div class="flex flex-col items-center gap-6 w-full border-t border-white/10 pt-12">
