@@ -7,22 +7,102 @@ const t = useTranslations(lang);
 const langSwitchUrl = lang === 'cz' ? '/en' : '/';
 ---
 
-<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-6 bg-transparent backdrop-blur-sm border-b border-white/5">
-    <div class="flex items-center gap-3">
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-6 bg-transparent backdrop-blur-sm border-b border-white/5 transition-all duration-300">
+    <div class="flex items-center gap-3 relative z-[60]">
         <span class="material-symbols-outlined text-primary text-3xl">brush</span>
         <h2 class="text-xl font-bold tracking-tight">ELARA.VO</h2>
     </div>
+
+    <!-- Desktop Nav -->
     <nav class="hidden md:flex items-center gap-10">
         <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.works')}</a>
         <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.philosophy')}</a>
         <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.exhibitions')}</a>
         <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.contact')}</a>
     </nav>
-    <div class="flex items-center gap-4">
+
+    <!-- Desktop Actions -->
+    <div class="hidden md:flex items-center gap-4">
         <a href={langSwitchUrl} class="text-sm font-medium hover:text-primary transition-colors">{t('nav.lang_switch')}</a>
         <a href="/admin" class="text-sm font-medium hover:text-primary transition-colors">{t('nav.admin')}</a>
-        <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg text-sm font-bold transition-all">
+        <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg text-sm font-bold transition-all transform hover:scale-105 active:scale-95">
             {t('nav.inquire')}
         </button>
     </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button id="menu-toggle" class="md:hidden relative z-[60] p-2 -mr-2 text-slate-100 focus:outline-none transition-transform active:scale-90" aria-label="Toggle Menu">
+        <span class="material-symbols-outlined text-3xl" id="menu-icon">menu</span>
+    </button>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-background-dark/98 z-[55] pointer-events-none opacity-0 translate-y-[-10px] transition-all duration-300 ease-in-out md:hidden flex flex-col items-center justify-center p-8 backdrop-blur-xl">
+        <nav class="flex flex-col items-center gap-8 mb-12 w-full">
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.works')}</a>
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.philosophy')}</a>
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.exhibitions')}</a>
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.contact')}</a>
+        </nav>
+        
+        <div class="flex flex-col items-center gap-6 w-full border-t border-white/10 pt-12">
+            <div class="flex items-center gap-8">
+                <a href={langSwitchUrl} class="text-lg font-medium hover:text-primary transition-colors mobile-link">{t('nav.lang_switch')}</a>
+                <a href="/admin" class="text-lg font-medium hover:text-primary transition-colors mobile-link">{t('nav.admin')}</a>
+            </div>
+            <button class="w-full max-w-xs bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-xl text-lg font-bold shadow-lg shadow-primary/20 transition-all active:scale-95">
+                {t('nav.inquire')}
+            </button>
+        </div>
+    </div>
 </header>
+
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+    let isMenuOpen = false;
+
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+        
+        if (isMenuOpen) {
+            mobileMenu?.classList.remove('pointer-events-none', 'opacity-0', 'translate-y-[-10px]');
+            mobileMenu?.classList.add('opacity-100', 'translate-y-0');
+            if (menuIcon) menuIcon.textContent = 'close';
+            document.body.style.overflow = 'hidden';
+            document.querySelector('header')?.classList.remove('bg-transparent', 'backdrop-blur-sm');
+            document.querySelector('header')?.classList.add('bg-background-dark');
+        } else {
+            mobileMenu?.classList.add('pointer-events-none', 'opacity-0', 'translate-y-[-10px]');
+            mobileMenu?.classList.remove('opacity-100', 'translate-y-0');
+            if (menuIcon) menuIcon.textContent = 'menu';
+            document.body.style.overflow = '';
+            document.querySelector('header')?.classList.add('bg-transparent', 'backdrop-blur-sm');
+            document.querySelector('header')?.classList.remove('bg-background-dark');
+        }
+    }
+
+    menuToggle?.addEventListener('click', toggleMenu);
+
+    // Close menu when clicking a link
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (isMenuOpen) toggleMenu();
+        });
+    });
+
+    // Close menu when resizing to desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768 && isMenuOpen) {
+            toggleMenu();
+        }
+    });
+</script>
+
+<style>
+    /* Small adjustments for better glassmorphism */
+    #mobile-menu {
+        background: radial-gradient(circle at center, rgba(10, 10, 10, 0.98), rgba(0, 0, 0, 1));
+    }
+</style>
