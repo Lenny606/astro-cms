@@ -7,8 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from .database import get_database
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 from bson import ObjectId
+
+from .services.image_service import image_service
 
 app = FastAPI(title="Mini CMS API")
 
@@ -26,12 +28,14 @@ UPLOAD_DIR = Path("folder")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 # Serve static files
+# We keep serving from UPLOAD_DIR ("folder")
 app.mount("/folder", StaticFiles(directory=UPLOAD_DIR), name="folder")
 
 # Pydantic models for Gallery
 class GalleryItem(BaseModel):
     url: str
     filename: str
+    versions: Optional[Dict[str, Dict[str, str]]] = None
 
 class Gallery(BaseModel):
     id: Optional[str] = None
@@ -63,11 +67,15 @@ async def upload_image(file: UploadFile = File(...)):
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image")
     
-    file_path = UPLOAD_DIR / file.filename
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    return {"filename": file.filename, "url": f"/folder/{file.filename}"}
+    try:
+        processed_data = await image_service.process_and_save(file)
+        return {
+            "filename": file.filename,
+            "url": processed_data["original"],
+            "versions": processed_data["versions"]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image processing failed: {str(e)}")
 
 @app.get("/posts")
 async def get_posts(db: AsyncIOMotorDatabase = Depends(get_database)):
