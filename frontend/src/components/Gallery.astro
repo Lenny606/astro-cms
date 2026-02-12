@@ -88,7 +88,7 @@ const displayItems = dynamicItems.length > 0 ? dynamicItems : fallbackItems;
     </div>
     
     <div class="mt-20 flex justify-center">
-        <a href="/gallery" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
+        <a href={lang === 'en' ? "/en/gallery" : "/gallery"} class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
             <span class="text-sm font-bold uppercase tracking-widest">Load More Works</span>
             <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">trending_flat</span>
         </a>

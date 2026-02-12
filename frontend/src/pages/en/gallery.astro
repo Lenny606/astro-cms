@@ -1,8 +1,8 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.astro';
-import Footer from '../components/Footer.astro';
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import Layout from '../../layouts/Layout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -20,23 +20,13 @@ try {
 	const settingsResponse = await fetch(`${API_URL}/api/settings`);
 	if (settingsResponse.ok) {
 		const data = await settingsResponse.json();
-		if (lang === 'en') {
-			navLabels = {
-				works: data.nav_works_en,
-				philosophy: data.nav_philosophy_en,
-				exhibitions: data.nav_exhibitions_en,
-				contact: data.nav_contact_en,
-				inquire: data.nav_inquire_en,
-			};
-		} else {
-			navLabels = {
-				works: data.nav_works_cz,
-				philosophy: data.nav_philosophy_cz,
-				exhibitions: data.nav_exhibitions_cz,
-				contact: data.nav_contact_cz,
-				inquire: data.nav_inquire_cz,
-			};
-		}
+		navLabels = {
+			works: data.nav_works_en,
+			philosophy: data.nav_philosophy_en,
+			exhibitions: data.nav_exhibitions_en,
+			contact: data.nav_contact_en,
+			inquire: data.nav_inquire_en,
+		};
 	}
 } catch (e) {
 	console.error('Failed to fetch data', e);
@@ -69,7 +59,7 @@ try {
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {gallery.images && gallery.images.slice(0, 6).map((img, index) => (
-                                    <a href={lang === 'en' ? `/en/item/${gallery.id}/${index}` : `/item/${gallery.id}/${index}`} 
+                                    <a href={`/en/item/${gallery.id}/${index}`} 
                                        class="relative aspect-[4/5] overflow-hidden rounded-xl bg-slate-900 group/item">
                                         <img 
                                             src={`${API_URL}${img.url}`} 
@@ -85,7 +75,7 @@ try {
                             
                             {gallery.images && gallery.images.length > 6 && (
                                 <div class="mt-8 flex justify-end">
-                                    <a href={lang === 'en' ? `/en/item/${gallery.id}/0` : `/item/${gallery.id}/0`} 
+                                    <a href={`/en/item/${gallery.id}/0`} 
                                        class="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-primary transition-colors flex items-center gap-2">
                                         Explore full gallery
                                         <span class="material-symbols-outlined text-sm">trending_flat</span>

@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+let navLabels = {};
+
+try {
+	const response = await fetch(`${API_URL}/api/settings`);
+	if (response.ok) {
+		const data = await response.json();
+		navLabels = {
+			works: data.nav_works_cz,
+			philosophy: data.nav_philosophy_cz,
+			exhibitions: data.nav_exhibitions_cz,
+			contact: data.nav_contact_cz,
+			inquire: data.nav_inquire_cz,
+		};
+	}
+} catch (e) {
+	console.error('Failed to fetch settings', e);
+}
+---
+
+<Layout title="Výstavy | ELARA.VO">
+    <div class="relative flex min-h-screen w-full flex-col">
+        <Navigation navLabels={navLabels} />
+        <main class="flex-grow pt-32 pb-20 px-6 md:px-12 max-w-4xl mx-auto">
+            <h1 class="text-4xl font-bold mb-8">Výstavy</h1>
+            <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                Seznam výstav bude doplněn později.
+            </p>
+        </main>
+        <Footer />
+    </div>
+</Layout>
