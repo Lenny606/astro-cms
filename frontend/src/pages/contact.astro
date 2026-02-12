@@ -6,11 +6,40 @@ import { useTranslations, getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+let navLabels = {};
+
+try {
+	const response = await fetch(`${API_URL}/api/settings`);
+	if (response.ok) {
+		const data = await response.json();
+		if (lang === 'en') {
+			navLabels = {
+				works: data.nav_works_en,
+				philosophy: data.nav_philosophy_en,
+				exhibitions: data.nav_exhibitions_en,
+				contact: data.nav_contact_en,
+				inquire: data.nav_inquire_en,
+			};
+		} else {
+			navLabels = {
+				works: data.nav_works_cz,
+				philosophy: data.nav_philosophy_cz,
+				exhibitions: data.nav_exhibitions_cz,
+				contact: data.nav_contact_cz,
+				inquire: data.nav_inquire_cz,
+			};
+		}
+	}
+} catch (e) {
+	console.error('Failed to fetch settings', e);
+}
 ---
 
 <Layout title={`${t('nav.contact')} | ELARA.VO`}>
     <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-        <Navigation />
+        <Navigation navLabels={navLabels} />
         
         <main class="flex-grow flex flex-col lg:flex-row">
             <!-- Visual Section (Hero Image) -->

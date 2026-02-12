@@ -4,6 +4,26 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
+interface Props {
+    navLabels?: {
+        works?: string;
+        philosophy?: string;
+        exhibitions?: string;
+        contact?: string;
+        inquire?: string;
+    };
+}
+
+const { navLabels } = Astro.props;
+
+const labels = {
+    works: navLabels?.works || t('nav.works'),
+    philosophy: navLabels?.philosophy || t('nav.philosophy'),
+    exhibitions: navLabels?.exhibitions || t('nav.exhibitions'),
+    contact: navLabels?.contact || t('nav.contact'),
+    inquire: navLabels?.inquire || t('nav.inquire'),
+};
+
 const langSwitchUrl = lang === 'cz' ? '/en' : '/';
 ---
 
@@ -15,10 +35,10 @@ const langSwitchUrl = lang === 'cz' ? '/en' : '/';
 
     <!-- Desktop Nav -->
     <nav class="hidden md:flex items-center gap-10">
-        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.works')}</a>
-        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.philosophy')}</a>
-        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{t('nav.exhibitions')}</a>
-        <a class="text-sm font-medium hover:text-primary transition-colors" href={lang === 'en' ? "/en/contact" : "/contact"}>{t('nav.contact')}</a>
+        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{labels.works}</a>
+        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{labels.philosophy}</a>
+        <a class="text-sm font-medium hover:text-primary transition-colors" href="#">{labels.exhibitions}</a>
+        <a class="text-sm font-medium hover:text-primary transition-colors" href={lang === 'en' ? "/en/contact" : "/contact"}>{labels.contact}</a>
     </nav>
 
     <!-- Desktop Actions -->
@@ -26,7 +46,7 @@ const langSwitchUrl = lang === 'cz' ? '/en' : '/';
         <a href={langSwitchUrl} class="text-sm font-medium hover:text-primary transition-colors">{t('nav.lang_switch')}</a>
         <a href="/admin" class="text-sm font-medium hover:text-primary transition-colors">{t('nav.admin')}</a>
         <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg text-sm font-bold transition-all transform hover:scale-105 active:scale-95">
-            {t('nav.inquire')}
+            {labels.inquire}
         </button>
     </div>
 
@@ -38,10 +58,10 @@ const langSwitchUrl = lang === 'cz' ? '/en' : '/';
     <!-- Mobile Menu Overlay -->
     <div id="mobile-menu" class="fixed inset-0 bg-background-dark/98 z-[55] pointer-events-none opacity-0 translate-y-[-10px] transition-all duration-300 ease-in-out md:hidden flex flex-col items-center justify-center p-8 backdrop-blur-xl">
         <nav class="flex flex-col items-center gap-8 mb-12 w-full">
-            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.works')}</a>
-            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.philosophy')}</a>
-            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{t('nav.exhibitions')}</a>
-            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href={lang === 'en' ? "/en/contact" : "/contact"}>{t('nav.contact')}</a>
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{labels.works}</a>
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{labels.philosophy}</a>
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href="#">{labels.exhibitions}</a>
+            <a class="text-2xl font-bold hover:text-primary transition-colors mobile-link" href={lang === 'en' ? "/en/contact" : "/contact"}>{labels.contact}</a>
         </nav>
         
         <div class="flex flex-col items-center gap-6 w-full border-t border-white/10 pt-12">
@@ -50,7 +70,7 @@ const langSwitchUrl = lang === 'cz' ? '/en' : '/';
                 <a href="/admin" class="text-lg font-medium hover:text-primary transition-colors mobile-link">{t('nav.admin')}</a>
             </div>
             <button class="w-full max-w-xs bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-xl text-lg font-bold shadow-lg shadow-primary/20 transition-all active:scale-95">
-                {t('nav.inquire')}
+                {labels.inquire}
             </button>
         </div>
     </div>
