@@ -1,16 +1,11 @@
-import os
-import shutil
-from pathlib import Path
-from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
+from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from .database import get_database
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from pydantic import BaseModel
-from typing import List, Optional, Dict
-from bson import ObjectId
 
-from .services.image_service import image_service
+from .database import get_database
+from .config import UPLOAD_DIR
+from .routers import uploads, settings, galleries, posts
 
 app = FastAPI(title="Mini CMS API")
 
@@ -23,31 +18,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Setup uploads directory
-UPLOAD_DIR = Path("folder")
-UPLOAD_DIR.mkdir(exist_ok=True)
-
 # Serve static files
-# We keep serving from UPLOAD_DIR ("folder")
 app.mount("/folder", StaticFiles(directory=UPLOAD_DIR), name="folder")
 
-# Pydantic models for Gallery
-class GalleryItem(BaseModel):
-    url: str
-    filename: str
-    versions: Optional[Dict[str, Dict[str, str]]] = None
-
-class Gallery(BaseModel):
-    id: Optional[str] = None
-    title: str
-    images: List[GalleryItem] = []
-
-class GalleryCreate(BaseModel):
-    title: str
-
-class GalleryUpdate(BaseModel):
-    title: Optional[str] = None
-    images: Optional[List[GalleryItem]] = None
+# Include Routers
+app.include_router(uploads.router)
+app.include_router(settings.router)
+app.include_router(galleries.router)
+app.include_router(posts.router)
 
 @app.get("/")
 async def root():
@@ -61,112 +39,3 @@ async def health_check(db: AsyncIOMotorDatabase = Depends(get_database)):
         return {"status": "healthy", "database": "connected"}
     except Exception as e:
         return {"status": "unhealthy", "error": str(e)}
-
-@app.post("/api/upload")
-async def upload_image(file: UploadFile = File(...)):
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="File must be an image")
-    
-    try:
-        processed_data = await image_service.process_and_save(file)
-        return {
-            "filename": file.filename,
-            "url": processed_data["original"],
-            "versions": processed_data["versions"]
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Image processing failed: {str(e)}")
-
-@app.get("/posts")
-async def get_posts(db: AsyncIOMotorDatabase = Depends(get_database)):
-    posts = await db.posts.find().to_list(10)
-    # Simple serialization for demo
-    for post in posts:
-        post["_id"] = str(post["_id"])
-    return posts
-
-@app.get("/api/settings")
-async def get_settings(db: AsyncIOMotorDatabase = Depends(get_database)):
-    settings = await db.settings.find_one({"type": "general"})
-    if not settings:
-        return {
-            "headline_cz": "Alex Carter",
-            "headline_en": "Alex Carter",
-            "hero_desc_cz": "",
-            "hero_desc_en": "",
-            "statement_cz": "",
-            "statement_en": ""
-        }
-    return {
-        "headline_cz": settings.get("headline_cz", settings.get("headline", "Alex Carter")),
-        "headline_en": settings.get("headline_en", settings.get("headline", "Alex Carter")),
-        "hero_desc_cz": settings.get("hero_desc_cz", ""),
-        "hero_desc_en": settings.get("hero_desc_en", ""),
-        "statement_cz": settings.get("statement_cz", ""),
-        "statement_en": settings.get("statement_en", "")
-    }
-
-@app.post("/api/settings")
-async def update_settings(data: dict, db: AsyncIOMotorDatabase = Depends(get_database)):
-    update_data = {
-        "headline_cz": data.get("headline_cz"),
-        "headline_en": data.get("headline_en"),
-        "hero_desc_cz": data.get("hero_desc_cz"),
-        "hero_desc_en": data.get("hero_desc_en"),
-        "statement_cz": data.get("statement_cz"),
-        "statement_en": data.get("statement_en")
-    }
-    await db.settings.update_one(
-        {"type": "general"},
-        {"$set": update_data},
-        upsert=True
-    )
-    return {"status": "success"}
-
-# Gallery API
-@app.get("/api/galleries")
-async def get_galleries(db: AsyncIOMotorDatabase = Depends(get_database)):
-    cursor = db.galleries.find()
-    galleries = []
-    async for doc in cursor:
-        doc["id"] = str(doc["_id"])
-        del doc["_id"]
-        galleries.append(doc)
-    return galleries
-
-@app.post("/api/galleries")
-async def create_gallery(gallery: GalleryCreate, db: AsyncIOMotorDatabase = Depends(get_database)):
-    new_gallery = {
-        "title": gallery.title,
-        "images": []
-    }
-    result = await db.galleries.insert_one(new_gallery)
-    return {"id": str(result.inserted_id), "title": gallery.title, "images": []}
-
-@app.put("/api/galleries/{gallery_id}")
-async def update_gallery(gallery_id: str, gallery: GalleryUpdate, db: AsyncIOMotorDatabase = Depends(get_database)):
-    update_data = {}
-    if gallery.title is not None:
-        update_data["title"] = gallery.title
-    if gallery.images is not None:
-        update_data["images"] = [img.dict() for img in gallery.images]
-    
-    if not update_data:
-        raise HTTPException(status_code=400, detail="No data to update")
-        
-    result = await db.galleries.update_one(
-        {"_id": ObjectId(gallery_id)},
-        {"$set": update_data}
-    )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Gallery not found")
-        
-    return {"status": "success"}
-
-@app.delete("/api/galleries/{gallery_id}")
-async def delete_gallery(gallery_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
-    result = await db.galleries.delete_one({"_id": ObjectId(gallery_id)})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Gallery not found")
-    return {"status": "success"}
