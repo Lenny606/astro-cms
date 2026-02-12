@@ -65,18 +65,29 @@ const displayItems = dynamicItems.length > 0 ? dynamicItems : fallbackItems;
             <h2 class="text-3xl md:text-4xl font-bold mb-4">{t('projects.title')}</h2>
             <p class="text-slate-500 dark:text-slate-400">Curated pieces from the 2023-2024 collection.</p>
         </div>
-        <div class="flex gap-8 border-b border-white/10 pb-2">
-            <button class="text-sm font-bold border-b-2 border-primary pb-2">All Projects</button>
-            <button class="text-sm font-medium text-slate-500 hover:text-white transition-colors pb-2">Oil Paintings</button>
-            <button class="text-sm font-medium text-slate-500 hover:text-white transition-colors pb-2">Digital Sculptures</button>
-            <button class="text-sm font-medium text-slate-500 hover:text-white transition-colors pb-2">Mixed Media</button>
+        <div class="flex gap-4 md:gap-8 border-b border-white/10 pb-2 overflow-x-auto no-scrollbar max-w-full">
+            <button 
+                class="text-sm font-bold border-b-2 border-primary pb-2 whitespace-nowrap tab-btn active" 
+                data-category="all"
+            >
+                {lang === 'en' ? 'All Projects' : 'Všechny projekty'}
+            </button>
+            {galleries.map(g => (
+                <button 
+                    class="text-sm font-medium text-slate-500 hover:text-white transition-colors pb-2 whitespace-nowrap tab-btn" 
+                    data-category={g.title}
+                >
+                    {g.title}
+                </button>
+            ))}
         </div>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 masonry-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 masonry-grid" id="masonry-container">
         {displayItems.map((item) => (
             <a href={item.galleryId ? (lang === 'en' ? `/en/item/${item.galleryId}/${item.index}` : `/item/${item.galleryId}/${item.index}`) : '#'} 
-               class="relative aspect-[4/5] overflow-hidden rounded-xl bg-slate-900 group/item masonry-item">
+               class="relative aspect-[4/5] overflow-hidden rounded-xl bg-slate-900 group/item masonry-item"
+               data-category={item.category}>
                 <img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-100 group-hover/item:scale-105" src={item.image} alt={item.title} />
                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-end p-6">
                     <p class="text-white font-medium text-sm">View Detail</p>
@@ -91,4 +102,60 @@ const displayItems = dynamicItems.length > 0 ? dynamicItems : fallbackItems;
             <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">trending_flat</span>
         </a>
     </div>
+
+    <script>
+        const setupTabs = () => {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const items = document.querySelectorAll('.masonry-item');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const category = tab.getAttribute('data-category');
+
+                    // Update active tab styling
+                    tabs.forEach(t => {
+                        t.classList.remove('active', 'font-bold', 'border-b-2', 'border-primary');
+                        t.classList.add('text-slate-500', 'font-medium');
+                    });
+                    tab.classList.add('active', 'font-bold', 'border-b-2', 'border-primary');
+                    tab.classList.remove('text-slate-500', 'font-medium');
+
+                    // Filter items
+                    items.forEach(item => {
+                        const itemCategory = item.getAttribute('data-category');
+                        if (category === 'all' || itemCategory === category) {
+                            (item as HTMLElement).style.display = 'block';
+                            // Add a small animation/fade in
+                            (item as HTMLElement).style.opacity = '0';
+                            setTimeout(() => {
+                                (item as HTMLElement).style.opacity = '1';
+                                (item as HTMLElement).style.transition = 'opacity 0.4s ease-out';
+                            }, 10);
+                        } else {
+                            (item as HTMLElement).style.display = 'none';
+                        }
+                    });
+                });
+            });
+        };
+
+        // Initialize on page load
+        setupTabs();
+
+        // Re-initialize after view transitions if needed
+        document.addEventListener('astro:after-swap', setupTabs);
+    </script>
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+    </style>
 </main>
