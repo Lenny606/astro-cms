@@ -5,16 +5,17 @@ interface Props {
 
 const { quote } = Astro.props;
 ---
-<section class="bg-primary/5 py-32 border-y border-white/5">
+<section class="bg-white py-32 border-y border-slate-100 relative overflow-hidden">
+    <div class="absolute top-0 right-10 w-64 h-64 bg-primary/5 rounded-full -translate-y-1/2 blur-3xl"></div>
     <div class="max-w-4xl mx-auto px-6 text-center">
-        <span class="material-symbols-outlined text-primary text-4xl mb-8">format_quote</span>
-        <h2 class="text-3xl md:text-5xl font-bold leading-tight mb-10 italic font-display">
+        <span class="material-symbols-outlined text-primary text-5xl mb-12 opacity-30">format_quote</span>
+        <h2 class="text-3xl md:text-5xl font-extralight tracking-tight leading-tight mb-12 text-slate-900 font-display">
             "{quote || "Art should not merely be a representation of reality, but a window into the souls of the things we often overlook."}"
         </h2>
         <div class="flex items-center justify-center gap-4">
-            <div class="h-px w-12 bg-primary"></div>
-            <span class="font-bold tracking-widest uppercase text-sm">Elara Volkov</span>
-            <div class="h-px w-12 bg-primary"></div>
+            <div class="h-px w-8 bg-primary/30"></div>
+            <span class="font-bold tracking-[0.4em] uppercase text-[10px] text-slate-400">Elara Volkov</span>
+            <div class="h-px w-8 bg-primary/30"></div>
         </div>
     </div>
 </section>
