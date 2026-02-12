@@ -17,6 +17,7 @@ let totalCount = 0;
 let navLabels = {};
 
 try {
+    const response = await fetch(`${API_URL}/api/galleries`);
     if (response.ok) {
         const galleries = await response.json();
         gallery = galleries.find(g => g.id === galleryId);
@@ -97,71 +98,113 @@ const currentDisplay = parseInt(index) + 1;
             </div>
         </nav>
 
-        <main class="min-h-screen pt-24 pb-32 px-6 lg:px-12 mx-auto">
+        <main class="min-h-screen pt-24 pb-32 px-6 lg:px-12 mx-auto max-w-[1600px]">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
                 <!-- Left Side: Artwork Image -->
                 <div class="lg:col-span-7 xl:col-span-8">
-                    <div class="sticky top-32 overflow-hidden rounded-xl bg-white dark:bg-slate-900 shadow-2xl shadow-primary/5 group art-zoom max-h-[calc(100vh-160px)]">
-                        <img src={`${API_URL}${item.url}`} alt={item.filename} class="w-full h-full object-contain transition-transform duration-700 ease-out cursor-crosshair"/>
+                    <div class="sticky top-32 overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-[0_20px_50px_rgba(23,84,207,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] group art-zoom max-h-[calc(100vh-160px)]">
+                        <img src={`${API_URL}${item.url}`} alt={item.filename} class="w-full h-full object-contain transition-transform duration-1000 ease-out cursor-crosshair"/>
+                        
+                        <!-- Overlay gradient for depth -->
+                        <div class="absolute inset-0 pointer-events-none bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-50"></div>
                     </div>
-                    <div class="mt-6 flex items-center justify-between text-slate-400 dark:text-slate-500 text-xs">
-                        <p>{lang === 'en' ? 'Click to view high-resolution texture details' : 'Kliknutím zobrazíte detaily textury ve vysokém rozlišení'}</p>
-                        <p>© 2026 Alex Carter. {t('footer.rights')}</p>
+                    <div class="mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 text-slate-400 dark:text-slate-500 text-[10px] uppercase tracking-widest font-medium">
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center space-x-1">
+                                <span class="material-icons text-xs">zoom_in</span>
+                                <span>{lang === 'en' ? 'Scroll to zoom' : 'Rolujte pro přiblížení'}</span>
+                            </span>
+                            <span class="w-1 h-1 bg-primary/30 rounded-full"></span>
+                            <span>{lang === 'en' ? 'Texture analysis active' : 'Analýza textury aktivní'}</span>
+                        </div>
+                        <p>© 2026 JencoStudio. {t('footer.rights')}</p>
                     </div>
                 </div>
 
                 <!-- Right Side: Details & Narrative -->
                 <div class="lg:col-span-5 xl:col-span-4 flex flex-col space-y-12">
-                    <!-- Technical Specifications -->
-                    <section class="space-y-6">
-                        <div class="space-y-2">
-                            <span class="text-primary font-semibold tracking-widest text-xs uppercase">{lang === 'en' ? 'Series' : 'Série'}: {gallery.title}</span>
-                            <h1 class="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white leading-tight">{item.title || item.filename}</h1>
-                            <p class="text-xl text-slate-400 dark:text-slate-500 italic">2023</p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-8 py-8 border-y border-primary/10">
-                            <div>
-                                <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-1">{lang === 'en' ? 'Medium' : 'Médium'}</p>
-                                <p class="font-medium">Mixed Media on Canvas</p>
+                    <!-- Glassmorphism Container -->
+                    <div class="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 p-8 lg:p-10 rounded-3xl border border-white/20 dark:border-white/5 shadow-2xl space-y-10">
+                        <!-- Technical Specifications -->
+                        <section class="space-y-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="h-px w-6 bg-primary"></span>
+                                    <span class="text-primary font-bold tracking-[0.2em] text-[10px] uppercase">{gallery.title}</span>
+                                </div>
+                                <h1 class="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.1] tracking-tight">{item.title || item.filename.split('.')[0]}</h1>
+                                <div class="flex items-center space-x-4 pt-2">
+                                    <p class="text-2xl font-light text-primary/60 italic">2024</p>
+                                    <span class="px-3 py-1 bg-primary/10 rounded-full text-[10px] uppercase tracking-wider font-bold text-primary">Limited Edition</span>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-1">{lang === 'en' ? 'Dimensions' : 'Rozměry'}</p>
-                                <p class="font-medium">120cm × 150cm</p>
+                            
+                            <div class="grid grid-cols-2 gap-8 py-8 border-y border-primary/10">
+                                <div>
+                                    <p class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-2 font-bold">{lang === 'en' ? 'Technique' : 'Technika'}</p>
+                                    <p class="font-semibold text-slate-800 dark:text-slate-200">Mixed Media</p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-2 font-bold">{lang === 'en' ? 'Resolution' : 'Rozlišení'}</p>
+                                    <p class="font-semibold text-slate-800 dark:text-slate-200">8K Original</p>
+                                </div>
                             </div>
+                        </section>
+
+                        <!-- Narrative Statement -->
+                        <section class="space-y-6">
+                            <h3 class="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80">{lang === 'en' ? "Visual Narrative" : 'Vizuální narativ'}</h3>
+                            <div class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed text-base font-normal">
+                                <p>
+                                    {lang === 'en' 
+                                        ? "This capture from the series explores the intricate balance between digital precision and organic imperfection. Every stroke and texture is preserved in extreme detail, inviting the viewer to explore the micro-landscapes within the composition."
+                                        : "Tento záběr ze série zkoumá složitou rovnováhu mezi digitální přesností a organickou nedokonalostí. Každý tah a textura jsou zachovány v extrémním detailu a zvou diváka k prozkoumání mikrokrajin v kompozici."
+                                    }
+                                </p>
+                            </div>
+                        </section>
+
+                        <!-- Actions -->
+                        <section class="space-y-4 pt-4">
+                            <button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-5 rounded-2xl transition-all shadow-[0_10px_30px_rgba(23,84,207,0.3)] flex items-center justify-center space-x-3 group relative overflow-hidden">
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                <span class="material-icons text-base">send</span>
+                                <span class="uppercase tracking-widest text-xs">{lang === 'en' ? 'Inquire about piece' : 'Poptat toto dílo'}</span>
+                            </button>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <button class="bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-bold py-4 rounded-2xl transition-all flex items-center justify-center space-x-2 text-[10px] uppercase tracking-widest">
+                                    <span class="material-icons text-sm">share</span>
+                                    <span>{lang === 'en' ? 'Share' : 'Sdílet'}</span>
+                                </button>
+                                <button class="bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-bold py-4 rounded-2xl transition-all flex items-center justify-center space-x-2 text-[10px] uppercase tracking-widest">
+                                    <span class="material-icons text-sm">download</span>
+                                    <span>{lang === 'en' ? 'Assets' : 'Podklady'}</span>
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Series Navigation -->
+                    <div class="p-8 rounded-3xl bg-primary/5 dark:bg-primary/10 border border-primary/10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-primary mb-4">{lang === 'en' ? 'Collection Navigation' : 'Navigace v kolekci'}</h4>
+                        <div class="flex items-center justify-between">
+                             <div class="flex -space-x-3 overflow-hidden">
+                                {gallery.images.slice(0, 5).map((img, i) => (
+                                    <div class={`inline-block h-10 w-10 rounded-full ring-4 ring-background-light dark:ring-background-dark overflow-hidden ${i === parseInt(index) ? 'ring-primary z-10' : 'opacity-60'}`}>
+                                        <img class="h-full w-full object-cover" src={`${API_URL}${img.url}`} alt="" />
+                                    </div>
+                                ))}
+                                {gallery.images.length > 5 && (
+                                    <div class="flex items-center justify-center h-10 w-10 rounded-full ring-4 ring-background-light dark:ring-background-dark bg-slate-200 dark:bg-slate-800 text-[10px] font-bold">
+                                        +{gallery.images.length - 5}
+                                    </div>
+                                )}
+                            </div>
+                            <span class="text-xs font-black tracking-tighter text-primary/40 leading-none">
+                                {currentDisplay.toString().padStart(2, '0')} / {totalCount.toString().padStart(2, '0')}
+                            </span>
                         </div>
-                    </section>
-
-                    <!-- Poetic Description -->
-                    <section class="space-y-6">
-                        <h3 class="text-sm font-semibold uppercase tracking-widest text-primary">{lang === 'en' ? "Artist's Statement" : 'Vyjádření umělce'}</h3>
-                        <div class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed text-lg font-light">
-                            <p>
-                                "This piece explores the liminal space between recollection and reality. Conceived during a period of profound isolation, where the absence of external noise amplified the internal dialogue of memory."
-                            </p>
-                            <p>
-                                The heavy impasto technique in the lower quadrants represents the weight of the physical world, while the translucent glaze layers at the top suggest the fleeting, ephemeral nature of thought.
-                            </p>
-                        </div>
-                    </section>
-
-                    <!-- Actions -->
-                    <section class="pt-6 space-y-4">
-                        <button class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center space-x-2">
-                            <span class="material-icons text-sm">mail_outline</span>
-                            <span>{lang === 'en' ? 'Inquire about this piece' : 'Poptat toto dílo'}</span>
-                        </button>
-                        <button class="w-full bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary font-semibold py-4 rounded-xl transition-all flex items-center justify-center space-x-2">
-                            <span class="material-icons text-sm">file_download</span>
-                            <span>{lang === 'en' ? 'Download Catalog Entry (PDF)' : 'Stáhnout záznam z katalogu (PDF)'}</span>
-                        </button>
-                    </section>
-
-                    <!-- Tags -->
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] uppercase tracking-wider font-semibold">Abstract</span>
-                        <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] uppercase tracking-wider font-semibold">Contemporary</span>
-                        <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] uppercase tracking-wider font-semibold">Blue</span>
-                        <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] uppercase tracking-wider font-semibold">Minimalism</span>
                     </div>
                 </div>
             </div>
@@ -169,35 +212,46 @@ const currentDisplay = parseInt(index) + 1;
 
         <!-- Bottom Navigation -->
         <footer class="fixed bottom-0 left-0 right-0 z-40 px-8 py-8 pointer-events-none">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center max-w-[1700px] mx-auto">
                 <!-- Previous -->
                 {prevIndex !== null ? (
-                    <a class="pointer-events-auto group flex flex-col items-start bg-white/90 dark:bg-background-dark/90 backdrop-blur-md p-4 rounded-xl border border-primary/5 shadow-xl transition-transform hover:-translate-y-1" 
+                    <a class="pointer-events-auto group flex flex-col items-start backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 p-5 rounded-2xl border border-white/20 dark:border-white/5 shadow-2xl transition-all hover:-translate-y-2 hover:bg-primary/5 dark:hover:bg-primary/20" 
                        href={lang === 'en' ? `/en/item/${galleryId}/${prevIndex}` : `/item/${galleryId}/${prevIndex}`}>
-                        <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-1">{lang === 'en' ? 'Previous Work' : 'Předchozí dílo'}</span>
-                        <div class="flex items-center space-x-3">
-                            <span class="material-icons text-primary group-hover:-translate-x-1 transition-transform">west</span>
-                            <span class="font-medium text-sm">{gallery.images[prevIndex].filename}</span>
+                        <span class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-2 font-bold">{lang === 'en' ? 'Previous Capture' : 'Předchozí záběr'}</span>
+                        <div class="flex items-center space-x-4">
+                            <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                                <span class="material-icons text-sm group-hover:-translate-x-1 transition-transform">west</span>
+                            </div>
+                            <span class="font-bold text-xs tracking-tight text-slate-700 dark:text-slate-300 capitalize">{gallery.images[prevIndex].filename.split('.')[0]}</span>
                         </div>
                     </a>
                 ) : <div class="w-1"></div>}
 
-                <!-- Pagination Indicator -->
-                <div class="hidden md:flex pointer-events-auto bg-white/90 dark:bg-background-dark/90 backdrop-blur-md px-6 py-2 rounded-full border border-primary/5 shadow-xl items-center space-x-4">
-                    <span class="text-xs font-bold text-primary tracking-widest">{currentDisplay.toString().padStart(2, '0')} / {totalCount.toString().padStart(2, '0')}</span>
-                    <div class="w-24 h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <div class="h-full bg-primary" style={`width: ${(currentDisplay/totalCount)*100}%`}></div>
+                <!-- Pagination Indicator (Center) -->
+                <div class="hidden xl:flex pointer-events-auto backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 px-8 py-4 rounded-full border border-white/20 dark:border-white/5 shadow-2xl items-center space-x-6">
+                    <div class="flex flex-col items-center">
+                        <span class="text-[10px] font-black text-primary tracking-[0.3em] uppercase mb-1">Index</span>
+                        <span class="text-lg font-black text-slate-900 dark:text-white tabular-nums">{currentDisplay.toString().padStart(2, '0')}</span>
+                    </div>
+                    <div class="w-32 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary shadow-[0_0_10px_rgba(23,84,207,0.5)] transition-all duration-500" style={`width: ${(currentDisplay/totalCount)*100}%`}></div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-[10px] font-black text-slate-400 tracking-[0.3em] uppercase mb-1">Total</span>
+                        <span class="text-lg font-black text-slate-400 tabular-nums">{totalCount.toString().padStart(2, '0')}</span>
                     </div>
                 </div>
 
                 <!-- Next -->
                 {nextIndex !== null ? (
-                    <a class="pointer-events-auto group flex flex-col items-end bg-white/90 dark:bg-background-dark/90 backdrop-blur-md p-4 rounded-xl border border-primary/5 shadow-xl transition-transform hover:-translate-y-1 text-right" 
+                    <a class="pointer-events-auto group flex flex-col items-end backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 p-5 rounded-2xl border border-white/20 dark:border-white/5 shadow-2xl transition-all hover:-translate-y-2 hover:bg-primary/5 dark:hover:bg-primary/20 text-right" 
                        href={lang === 'en' ? `/en/item/${galleryId}/${nextIndex}` : `/item/${galleryId}/${nextIndex}`}>
-                        <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-1">{lang === 'en' ? 'Next Work' : 'Následující dílo'}</span>
-                        <div class="flex items-center space-x-3">
-                            <span class="font-medium text-sm">{gallery.images[nextIndex].filename}</span>
-                            <span class="material-icons text-primary group-hover:translate-x-1 transition-transform">east</span>
+                        <span class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-2 font-bold">{lang === 'en' ? 'Next Capture' : 'Následující záběr'}</span>
+                        <div class="flex items-center space-x-4">
+                            <span class="font-bold text-xs tracking-tight text-slate-700 dark:text-slate-300 capitalize">{gallery.images[nextIndex].filename.split('.')[0]}</span>
+                            <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                                <span class="material-icons text-sm group-hover:translate-x-1 transition-transform">east</span>
+                            </div>
                         </div>
                     </a>
                 ) : <div class="w-1"></div>}
