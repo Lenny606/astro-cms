@@ -11,7 +11,7 @@ const lang = getLangFromUrl(Astro.url);
 ---
 
 <!DOCTYPE html>
-<html lang={lang} class="dark">
+<html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -44,7 +44,7 @@ const lang = getLangFromUrl(Astro.url);
 			}
 		</style>
 	</head>
-	<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display border-t-8 border-red-600">
+	<body class="bg-white text-slate-900 font-display">
 		<slot />
 	</body>
 </html>
