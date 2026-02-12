@@ -9,6 +9,16 @@ export default function AdminApp() {
     const [heroDescEN, setHeroDescEN] = useState('');
     const [statementCZ, setStatementCZ] = useState('');
     const [statementEN, setStatementEN] = useState('');
+    const [navWorksCZ, setNavWorksCZ] = useState('');
+    const [navWorksEN, setNavWorksEN] = useState('');
+    const [navPhilosophyCZ, setNavPhilosophyCZ] = useState('');
+    const [navPhilosophyEN, setNavPhilosophyEN] = useState('');
+    const [navExhibitionsCZ, setNavExhibitionsCZ] = useState('');
+    const [navExhibitionsEN, setNavExhibitionsEN] = useState('');
+    const [navContactCZ, setNavContactCZ] = useState('');
+    const [navContactEN, setNavContactEN] = useState('');
+    const [navInquireCZ, setNavInquireCZ] = useState('');
+    const [navInquireEN, setNavInquireEN] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [uploadMessage, setUploadMessage] = useState('');
@@ -45,6 +55,16 @@ export default function AdminApp() {
                 setHeroDescEN(data.hero_desc_en || '');
                 setStatementCZ(data.statement_cz || '');
                 setStatementEN(data.statement_en || '');
+                setNavWorksCZ(data.nav_works_cz || 'Díla');
+                setNavWorksEN(data.nav_works_en || 'Works');
+                setNavPhilosophyCZ(data.nav_philosophy_cz || 'Filosofie');
+                setNavPhilosophyEN(data.nav_philosophy_en || 'Philosophy');
+                setNavExhibitionsCZ(data.nav_exhibitions_cz || 'Výstavy');
+                setNavExhibitionsEN(data.nav_exhibitions_en || 'Exhibitions');
+                setNavContactCZ(data.nav_contact_cz || 'Kontakt');
+                setNavContactEN(data.nav_contact_en || 'Contact');
+                setNavInquireCZ(data.nav_inquire_cz || 'Poptávka');
+                setNavInquireEN(data.nav_inquire_en || 'Inquire');
             })
             .catch(err => console.error('Failed to fetch settings'));
 
@@ -76,7 +96,17 @@ export default function AdminApp() {
                     hero_desc_cz: heroDescCZ,
                     hero_desc_en: heroDescEN,
                     statement_cz: statementCZ,
-                    statement_en: statementEN
+                    statement_en: statementEN,
+                    nav_works_cz: navWorksCZ,
+                    nav_works_en: navWorksEN,
+                    nav_philosophy_cz: navPhilosophyCZ,
+                    nav_philosophy_en: navPhilosophyEN,
+                    nav_exhibitions_cz: navExhibitionsCZ,
+                    nav_exhibitions_en: navExhibitionsEN,
+                    nav_contact_cz: navContactCZ,
+                    nav_contact_en: navContactEN,
+                    nav_inquire_cz: navInquireCZ,
+                    nav_inquire_en: navInquireEN
                 }),
             });
             if (response.ok) {
@@ -539,6 +569,96 @@ export default function AdminApp() {
                         </div>
                     </section>
                 );
+            case 'navigation':
+                return (
+                    <section>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.2rem', fontWeight: 500 }}>Navigation Labels</h2>
+                            <button
+                                onClick={handleSaveSettings}
+                                disabled={isSaving}
+                                style={{
+                                    padding: '0.6rem 1.2rem',
+                                    borderRadius: '0.5rem',
+                                    backgroundColor: '#000',
+                                    color: '#fff',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontWeight: 500,
+                                    fontSize: '0.9rem',
+                                    opacity: isSaving ? 0.6 : 1
+                                }}
+                            >
+                                {isSaving ? 'Saving...' : 'Save Navigation'}
+                            </button>
+                        </div>
+
+                        <div style={styles.tabContainer}>
+                            <div
+                                style={styles.tab(settingsTab === 'cz')}
+                                onClick={() => setSettingsTab('cz')}
+                            >
+                                Czech (CZ)
+                            </div>
+                            <div
+                                style={styles.tab(settingsTab === 'en')}
+                                onClick={() => setSettingsTab('en')}
+                            >
+                                English (EN)
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '800px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Works / Díla</strong></label>
+                                    <input
+                                        type="text"
+                                        value={settingsTab === 'cz' ? navWorksCZ : navWorksEN}
+                                        onChange={(e) => settingsTab === 'cz' ? setNavWorksCZ(e.target.value) : setNavWorksEN(e.target.value)}
+                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Philosophy / Filosofie</strong></label>
+                                    <input
+                                        type="text"
+                                        value={settingsTab === 'cz' ? navPhilosophyCZ : navPhilosophyEN}
+                                        onChange={(e) => settingsTab === 'cz' ? setNavPhilosophyCZ(e.target.value) : setNavPhilosophyEN(e.target.value)}
+                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Exhibitions / Výstavy</strong></label>
+                                    <input
+                                        type="text"
+                                        value={settingsTab === 'cz' ? navExhibitionsCZ : navExhibitionsEN}
+                                        onChange={(e) => settingsTab === 'cz' ? setNavExhibitionsCZ(e.target.value) : setNavExhibitionsEN(e.target.value)}
+                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Contact / Kontakt</strong></label>
+                                    <input
+                                        type="text"
+                                        value={settingsTab === 'cz' ? navContactCZ : navContactEN}
+                                        onChange={(e) => settingsTab === 'cz' ? setNavContactCZ(e.target.value) : setNavContactEN(e.target.value)}
+                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}><strong>Inquire / Poptávka</strong></label>
+                                    <input
+                                        type="text"
+                                        value={settingsTab === 'cz' ? navInquireCZ : navInquireEN}
+                                        onChange={(e) => settingsTab === 'cz' ? setNavInquireCZ(e.target.value) : setNavInquireEN(e.target.value)}
+                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none' }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                );
             case 'gallery':
                 return (
                     <section>
@@ -675,6 +795,9 @@ export default function AdminApp() {
                 </div>
                 <div style={styles.sidebarItem(activeTab === 'gallery')} onClick={() => setActiveTab('gallery')}>
                     Gallery
+                </div>
+                <div style={styles.sidebarItem(activeTab === 'navigation')} onClick={() => setActiveTab('navigation')}>
+                    Navigation
                 </div>
                 <div style={styles.sidebarItem(activeTab === 'settings')} onClick={() => setActiveTab('settings')}>
                     Settings

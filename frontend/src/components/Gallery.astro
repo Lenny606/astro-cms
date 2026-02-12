@@ -73,24 +73,22 @@ const displayItems = dynamicItems.length > 0 ? dynamicItems : fallbackItems;
         </div>
     </div>
     
-    <div class="masonry-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 masonry-grid">
         {displayItems.map((item) => (
             <a href={item.galleryId ? (lang === 'en' ? `/en/item/${item.galleryId}/${item.index}` : `/item/${item.galleryId}/${item.index}`) : '#'} 
-               class="masonry-item group relative cursor-pointer overflow-hidden rounded-xl block">
-                <img class="w-full grayscale hover:grayscale-0 transition-all duration-700" src={item.image} alt={item.title} />
-                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
-                    <p class="text-primary text-xs font-bold uppercase tracking-widest mb-1">{item.year}</p>
-                    <h3 class="text-xl font-bold">{item.title}</h3>
-                    <p class="text-sm text-slate-300">{item.category}</p>
+               class="relative aspect-[4/5] overflow-hidden rounded-xl bg-slate-900 group/item masonry-item">
+                <img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-100 group-hover/item:scale-105" src={item.image} alt={item.title} />
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-end p-6">
+                    <p class="text-white font-medium text-sm">View Detail</p>
                 </div>
             </a>
         ))}
     </div>
     
     <div class="mt-20 flex justify-center">
-        <button class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
+        <a href={lang === 'en' ? "/en/gallery" : "/gallery"} class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
             <span class="text-sm font-bold uppercase tracking-widest">Load More Works</span>
             <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">trending_flat</span>
-        </button>
+        </a>
     </div>
 </main>

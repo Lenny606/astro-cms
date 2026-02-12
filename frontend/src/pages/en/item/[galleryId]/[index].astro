@@ -14,9 +14,9 @@ let item = null;
 let prevIndex = null;
 let nextIndex = null;
 let totalCount = 0;
+let navLabels = {};
 
 try {
-    const response = await fetch(`${API_URL}/api/galleries`);
     if (response.ok) {
         const galleries = await response.json();
         gallery = galleries.find(g => g.id === galleryId);
@@ -29,8 +29,30 @@ try {
             if (idx < totalCount - 1) nextIndex = idx + 1;
         }
     }
+
+    const settingsResponse = await fetch(`${API_URL}/api/settings`);
+    if (settingsResponse.ok) {
+        const data = await settingsResponse.json();
+        if (lang === 'en') {
+            navLabels = {
+                works: data.nav_works_en,
+                philosophy: data.nav_philosophy_en,
+                exhibitions: data.nav_exhibitions_en,
+                contact: data.nav_contact_en,
+                inquire: data.nav_inquire_en,
+            };
+        } else {
+            navLabels = {
+                works: data.nav_works_cz,
+                philosophy: data.nav_philosophy_cz,
+                exhibitions: data.nav_exhibitions_cz,
+                contact: data.nav_contact_cz,
+                inquire: data.nav_inquire_cz,
+            };
+        }
+    }
 } catch (e) {
-    console.error('Failed to fetch gallery item', e);
+    console.error('Failed to fetch data', e);
 }
 
 if (!item) {
@@ -65,10 +87,10 @@ const currentDisplay = parseInt(index) + 1;
                 <span>Return to Gallery</span>
             </a>
             <div class="hidden md:flex space-x-8 text-xs uppercase tracking-[0.2em] font-semibold text-slate-500 dark:text-slate-400">
-                <a class="hover:text-primary transition-colors" href="/en">{t('nav.works')}</a>
-                <a class="hover:text-primary transition-colors" href="#">{t('nav.exhibitions')}</a>
-                <a class="hover:text-primary transition-colors" href="#">About</a>
-                <a class="hover:text-primary transition-colors" href="/en/contact">{t('nav.contact')}</a>
+                <a class="hover:text-primary transition-colors" href="/en">{navLabels.works || t('nav.works')}</a>
+                <a class="hover:text-primary transition-colors" href="/en/exhibitions">{navLabels.exhibitions || t('nav.exhibitions')}</a>
+                <a class="hover:text-primary transition-colors" href="/en/philosophy">{navLabels.philosophy || 'About'}</a>
+                <a class="hover:text-primary transition-colors" href="/en/contact">{navLabels.contact || t('nav.contact')}</a>
             </div>
             <div class="md:hidden">
                 <span class="material-icons">menu</span>

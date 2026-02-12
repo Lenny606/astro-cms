@@ -13,6 +13,7 @@ const lang = getLangFromUrl(Astro.url);
 let headline = 'Elara Volkov';
 let heroDesc = '';
 let statement = '';
+let navLabels = {};
 
 try {
 	const response = await fetch(`${API_URL}/api/settings`);
@@ -22,10 +23,24 @@ try {
 			headline = data.headline_en || headline;
 			heroDesc = data.hero_desc_en;
 			statement = data.statement_en;
+			navLabels = {
+				works: data.nav_works_en,
+				philosophy: data.nav_philosophy_en,
+				exhibitions: data.nav_exhibitions_en,
+				contact: data.nav_contact_en,
+				inquire: data.nav_inquire_en,
+			};
 		} else {
 			headline = data.headline_cz || headline;
 			heroDesc = data.hero_desc_cz;
 			statement = data.statement_cz;
+			navLabels = {
+				works: data.nav_works_cz,
+				philosophy: data.nav_philosophy_cz,
+				exhibitions: data.nav_exhibitions_cz,
+				contact: data.nav_contact_cz,
+				inquire: data.nav_inquire_cz,
+			};
 		}
 	}
 } catch (e) {
@@ -35,7 +50,7 @@ try {
 
 <Layout title="ELARA.VO">
 	<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-		<Navigation />
+		<Navigation navLabels={navLabels} />
 		<Hero headline={headline} description={heroDesc} />
 		<Gallery />
 		<Statement quote={statement} />
