@@ -11,6 +11,10 @@ RUN npm install
 # Copy the rest of the frontend source code
 COPY frontend/ ./
 
+# Accept build arguments
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL=$PUBLIC_API_URL
+
 # Build the project
 RUN npm run build
 

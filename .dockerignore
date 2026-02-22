@@ -1,0 +1,27 @@
+# Node
+**/node_modules
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Dist
+**/dist
+**/.astro
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
